@@ -1,4 +1,4 @@
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
         <link rel="icon" type="image/png" href="../pics/book.png" />
@@ -16,10 +16,13 @@
         </head>
         <body>
             <header>
-                <?php
-                //$group = $_GET["group"];
-                echo "<h2>Группа:</h2> <b>" . /* $group */"ПИ-1-17" . "</b>";
-                ?>
+<!--                <?php-->
+<!--                //$group = $_GET["group"];-->
+<!--                echo "<h2>Группа:</h2> <b th:text="${group}"></b>";-->
+<!--                ?>-->
+                <div style="text-align: left">
+                    <h1 th:text="'Группа: ' + ${group}"></h1>
+                </div>
             </header>
             <main>
                 <h3>Занятие:</h3>

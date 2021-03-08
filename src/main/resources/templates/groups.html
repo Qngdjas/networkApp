@@ -22,13 +22,11 @@
             </div>
         </header>
         <main>
+
             <h3>Список групп:</h3>
             <form action = "../pages/group-info.php" method="get">
-                <ul type="disc">
-                    <li><a href="../pages/group-info.php" id="group">Группа 1</a></li>
-                    <li><a href="../pages/group-info.php" id="group">Группа 2</a></li>
-                    <li><a href="../pages/group-info.php" id="group">Группа 3</a></li>
-                    <li><a href="../pages/group-info.php" id="group">Группа 4</a></li>
+                <ul th:each="group :${groups}" type="disc">
+                    <li><a th:text="${group}" th:href="'group?group=' + ${group}"></a></li>
                 </ul>
             </form>
             <!--<form action="../pages/group-info.php" method="get">
