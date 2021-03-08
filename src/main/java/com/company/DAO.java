@@ -67,13 +67,46 @@ public class DAO {
     }*/
 
 
-    /*public ArrayList<String> getNameTeacher() {
+    public ArrayList<String> getNameTeacher() throws SQLException {
 
-        ArrayList<String>
+        ArrayList<String> teacherGroup = new ArrayList<>();
+
+        // opening database connection to MySQL server
+        createConnectionDataBase();
+
+        // getting Statement object to execute query
+        Statement statement = connectionBD.createStatement();
+
+        //sql query
+        String sqlQueryIDTeacher =
+                "SELECT id_teacher" +
+                "FROM teacher" +
+                "WHERE FIO_teacher = (name teacher)"; //вставить имя преподователя из бд
+
+        //sql query
+        String sqlQuery =
+                "SELECT id_grup" +
+                "FROM teacher_groups" +
+                "WHERE ";
 
 
-        return
-    }*/
+        // executing SELECT query
+        ResultSet resultSet = statement.executeQuery(sqlQuery);
+
+        //close statement
+        try {
+            statement.close();
+        } catch (SQLException se) {
+        }
+
+        //close resultSet
+        try {
+            resultSet.close();
+        } catch (SQLException se) {
+        }
+
+        return teacherGroup;
+    }
 
 
 }
