@@ -4,11 +4,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 public class WebController {
 
+    Service service = new Service();
+
     @RequestMapping("/")
-    public String logIn() {
+    public String logIn(HttpServletRequest request) {
+        System.out.println(request.getRemoteAddr());
         return "index";
     }
 
@@ -16,11 +21,12 @@ public class WebController {
     public String authorization(@RequestParam("login") String login,
                                 @RequestParam("password") String password,
                                 Model model){
-//        Если имя и пароль с базы совпадает с пришедшими, то дергаем фио из базы и кидает в страницу
-        if (login.equals("Anton") & password.equals("anton")){
 
-            String[] groups = new String[] {"PI", "KI", "SI"};
-            model.addAttribute("groups", groups);
+//        Если имя и пароль с базы совпадает с пришедшими, то дергаем фио из базы и кидает в страницу
+        int teacherId = service.authentication(login, password);
+        if (teacherId != 0) {
+//            service.get
+            model.addAttribute("groups", service.getGroups(teacherId));
             return "groups";
         }
 
@@ -30,9 +36,15 @@ public class WebController {
     @RequestMapping("/group")
     public String group(@RequestParam("group") String group,
                         Model model){
-        model.addAttribute("group", group);
+        model.addAttribute("students", service.getStudents(group));
         return "group-info";
     }
+
+    @RequestMapping("/test")
+    public String text(Model model){
+        return "index";
+    }
+
 
 
 //    @RequestMapping(value="/sheet")

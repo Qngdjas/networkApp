@@ -1,20 +1,23 @@
-package com.company;
+package com.qioki.Web;
+
+import org.apache.tomcat.util.net.jsse.JSSEUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class DAO {
 
     Connection connectionBD = null;
     //database link
-    private final String DB_URL = "jdbc:mysql://localhost:3306/journal_rp.sql";
+    private final String DB_URL = "jdbc:mysql://localhost:3306/journal_rp";
 
     /**
      * Creating a database connection
      */
     private void createConnectionDataBase(/*String user, String password*/) {
         try {
-            this.connectionBD = DriverManager.getConnection(DB_URL/*, user, password*/);
+            this.connectionBD = DriverManager.getConnection(DB_URL, "root", "");
         } catch (SQLException sql_exception) {
             sql_exception.printStackTrace();
         }
@@ -28,6 +31,93 @@ public class DAO {
             this.connectionBD.close();
         } catch (SQLException sql_exception) {
             sql_exception.printStackTrace();
+        }
+    }
+
+    public int auth(String username, String password) {
+        int result = 0;
+        this.createConnectionDataBase();
+        String query = "select id_teacher from login" +
+                " where teacher_login=? and teacher_password=?";
+        try {
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, username);
+            statement.setString(2, password);
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            boolean hasResult = resultSet.next();
+            if (hasResult) {
+                result = resultSet.getInt(1);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+    public ArrayList<String> getGroups(int teacherId){
+        this.createConnectionDataBase();
+        String query = "SELECT name_group FROM groups " +
+                "WHERE groups.id_group in (SELECT id_grup from teacher_groups where id_teacher=?)";
+        ArrayList<String> result = new ArrayList<>();
+        try{
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, Integer.toString(teacherId));
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()){
+                result.add(resultSet.getString(1));
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+    public ArrayList<String> getStudents(String groupName){
+        this.createConnectionDataBase();
+        ArrayList<String> result = new ArrayList<>();
+        String query = "select FIO_student from students" +
+                " WHERE id_group in (select id_group from groups where name_group=?)";
+        try{
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, groupName);
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()){
+                result.add(resultSet.getString(1));
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+    public String getTeacher(int teacherId){
+        this.createConnectionDataBase();
+        String query = "select FIO_teacher where id_teacher=?";
+        try {
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, Integer.toString(teacherId));
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()){
+                System.out.println();
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
         }
     }
 

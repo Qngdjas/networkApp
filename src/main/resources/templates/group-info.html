@@ -26,7 +26,7 @@
             </header>
             <main>
                 <h3>Занятие:</h3>
-                <form name="lesson" method="post">
+                <form name="lesson" method="get">
                     <table>
                         <tr>
                             <th colspan="2">Дата:</th>
@@ -62,51 +62,67 @@
                     <input type="submit" value="Сохранить">
                     <input type="reset" value="Очистить">
                 </form>
-                <form name="journal" method="post">
+                <form name="journal" method="get">
                     <table>
                         <tr>
                             <th>Студент</th>
                             <th>Оценка</th>
                         </tr>
-                        <tr>
-                            <td ><div style="text-align: center">Иванов Иван Иванович</div></td>
-                        <td>
-                            <div style="text-align: center">
-                                <select name="mark">
-                                    <option value="none">н/я</option>
-                                    <option value="five">отл</option>
-                                    <option value="four">хор</option>
-                                    <option value="three">удовл</option>
-                                </select>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><div style="text-align: center">Петров Петр Петрович</div></td>
-                        <td>
-                            <div style="text-align: center">
-                                <select name="mark">
-                                    <option value="none">н/я</option>
-                                    <option value="five">отл</option>
-                                    <option value="four">хор</option>
-                                    <option value="three">удовл</option>
-                                </select>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><div style="text-align: center">Александров Александр Александрович</div></td>
-                        <td>
-                            <div style="text-align: center">
-                                <select name="mark">
-                                    <option value="none">н/я</option>
-                                    <option value="five">отл</option>
-                                    <option value="four">хор</option>
-                                    <option value="three">удовл</option>
-                                </select>
-                            </div>
-                        </td>
-                    </tr>              
+                        <div th:each="student :${students}">
+                            <tr>
+                                <td ><div th:text="${student}" style="text-align: center"></div></td>
+                                <td>
+                                    <div style="text-align: center">
+                                        <select name="mark">
+                                            <option value="none">н/я</option>
+                                            <option value="attend">+</option>
+                                            <option value="five">отл</option>
+                                            <option value="four">хор</option>
+                                            <option value="three">удовл</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                        </div>
+<!--                        <tr>-->
+<!--                            <td ><div style="text-align: center">Иванов Иван Иванович</div></td>-->
+<!--                        <td>-->
+<!--                            <div style="text-align: center">-->
+<!--                                <select name="mark">-->
+<!--                                    <option value="none">н/я</option>-->
+<!--                                    <option value="five">отл</option>-->
+<!--                                    <option value="four">хор</option>-->
+<!--                                    <option value="three">удовл</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><div style="text-align: center">Петров Петр Петрович</div></td>-->
+<!--                        <td>-->
+<!--                            <div style="text-align: center">-->
+<!--                                <select name="mark">-->
+<!--                                    <option value="none">н/я</option>-->
+<!--                                    <option value="five">отл</option>-->
+<!--                                    <option value="four">хор</option>-->
+<!--                                    <option value="three">удовл</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                    <tr>-->
+<!--                        <td><div style="text-align: center">Александров Александр Александрович</div></td>-->
+<!--                        <td>-->
+<!--                            <div style="text-align: center">-->
+<!--                                <select name="mark">-->
+<!--                                    <option value="none">н/я</option>-->
+<!--                                    <option value="five">отл</option>-->
+<!--                                    <option value="four">хор</option>-->
+<!--                                    <option value="three">удовл</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </td>-->
+<!--                    </tr>              -->
                 </table>
                 <p><input type="submit" value="Отправить">
                     <input type="reset" value="Очистить"></p>
