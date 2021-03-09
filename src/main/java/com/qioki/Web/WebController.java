@@ -11,6 +11,7 @@ import java.util.*;
 public class WebController {
 
     String currentGroup = "";
+    int currentTeacher = 0;
     Service service = new Service();
 
     @RequestMapping("/")
@@ -27,6 +28,7 @@ public class WebController {
 
         int teacherId = service.authentication(login, password);
         if (teacherId != 0) {
+            currentTeacher = teacherId;
             HashMap<String, String> name = service.getTeacherName(teacherId);
             model.addAttribute("firstname", name.get("firstname"));
             model.addAttribute("lastname", name.get("lastname"));
@@ -60,7 +62,10 @@ public class WebController {
 //    }
     @RequestMapping("/test")
     public String text(@RequestParam Map<String, String> allParams, Model model){
-        service.insertMarks(allParams);
+        List<Mark> marks = service.insertMarks(allParams);
+        model.addAttribute("students", marks);
+        model.addAttribute("group", currentGroup);
+        model.addAttribute("disciplines", service.getDisciplines());
         return "group-info-mark";
     }
 

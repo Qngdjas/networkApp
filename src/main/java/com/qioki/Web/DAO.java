@@ -198,6 +198,39 @@ public class DAO {
         }
     }
 
+
+    public boolean recordExist(String date,
+                               String topic,
+                               String discipline,
+                               String lessonType){
+        this.createConnectionDataBase();
+        String query = "select id_journal from journal " +
+                "where date=? and topic=? and " +
+                "id_disciplines=(select id_disciplines from disciplines where disciplines=?) and " +
+                "id_type=(select id_type from type_activity where type=?)";
+        boolean result = false;
+        try{
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, date);
+            statement.setString(2, topic);
+            statement.setString(3, discipline);
+            statement.setString(4, lessonType);
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            if (resultSet.next()){
+                result = true;
+            }
+
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+
     public void insertMarks(String date,
                             String topic,
                             String discipline,
@@ -233,31 +266,41 @@ public class DAO {
         }
     }
 //
-//    public void updateMarks(String date,
-//                            String topic,
-//                            String discipline,
-//                            String lessonType,
-//                            HashMap<String, String> marks){
-//        ArrayList<String[]> journalIds = getJournalRecords(date, topic, discipline, lessonType);
-//        String query = "update journal" +
-//                "set id_estimation=?" +
-//                "where id_journal=? and id_student=?";
-//        this.createConnectionDataBase();
-//        try{
-//            for (String[] temp: journalIds ){
-//                if
-//            }
-//            PreparedStatement statement = this.connectionBD.prepareStatement(query);
-//            statement.setString(1, );
-//
-//        }catch (SQLException throwables){
-//            throwables.printStackTrace();
-//        }
-//        finally {
-//            this.closeConnectionDataBase();
-//        }
-//
-//    }
+    public void updateMarks(String date,
+                            String topic,
+                            String discipline,
+                            String lessonType,
+                            HashMap<String, String> marks){
+        ArrayList<String[]> journalIds = getJournalRecords(date, topic, discipline, lessonType);
+        String query = "update journal " +
+                "set id_estimation=(select id_estimation from estimation where estimation=?) " +
+                "where id_journal=?" +
+                " and id_student=(select id_student from students where FIO_student=?)";
+        this.createConnectionDataBase();
+        try{
+            //TODO Первый апдейт работает, остальные нет
+            for (String[] name: journalIds){
+                PreparedStatement statement = this.connectionBD.prepareStatement(query);
+                if (getMark(name[2]).equals(marks.get(name[1]))){
+                    statement.setString(1, getMark(name[2]));
+                }
+                else{
+                    statement.setString(1, marks.get(name[1]));
+                }
+                statement.setString(2, name[0]);
+                statement.setString(3, name[1]);
+                System.out.println(statement);
+                statement.execute();
+            }
+
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+        }
+
+    }
 
 
     public String getStudent(String studentId){
@@ -304,6 +347,39 @@ public class DAO {
 
 
     public ArrayList<String[]> getJournalRecords(String date,
+                                                 String topic,
+                                                 String discipline,
+                                                 String lessonType){
+        String query = "Select id_journal, id_student, id_estimation from journal " +
+                "where date=? and " +
+                "topic=? and " +
+                "id_disciplines=(select id_disciplines from disciplines where disciplines=?) and " +
+                "id_type=(select id_type from type_activity where type=?)";
+        ArrayList<String[]> result = new ArrayList<>();
+        this.createConnectionDataBase();
+        try{
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, date);
+            statement.setString(2, topic);
+            statement.setString(3, discipline);
+            statement.setString(4, lessonType);
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()){
+                String[] temp = new String[] {resultSet.getString(1),
+                        getStudent(resultSet.getString(2)), resultSet.getString(3)};
+                result.add(temp);
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+    public ArrayList<String[]> getMarkAndStudent(String date,
                                                String topic,
                                                String discipline,
                                                String lessonType){
@@ -320,7 +396,6 @@ public class DAO {
             statement.setString(2, topic);
             statement.setString(3, discipline);
             statement.setString(4, lessonType);
-            System.out.println(statement);
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()){

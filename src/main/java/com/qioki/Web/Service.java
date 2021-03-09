@@ -61,14 +61,15 @@ public class Service {
        return nameList;
     }
 
-    public void insertMarks(Map<String, String> params) {
+    public List<Mark> insertMarks(Map<String, String> params) {
+        System.out.println(params.entrySet());
         HashMap<String, String> marks = new HashMap<>();
         for(String key: params.keySet()){
             if (key.contains("mark|")){
                 marks.put(key.replace("mark|", ""), params.get(key));
             }
         }
-
+        System.out.println(marks);
         boolean check = true;
         for(String mark: marks.values()){
             if  (!mark.equals("-")){
@@ -76,16 +77,48 @@ public class Service {
                 break;
             }
         }
+        //check true if all marks is -
         if (check){
-            //Получить все оценки
+
+            if (!dao.recordExist(params.get("date"),
+                    params.get("topic"),
+                    params.get("disciplines"),
+                    params.get("lessontype"))) {
+                dao.insertMarks(params.get("date"),
+                        params.get("topic"),
+                        params.get("disciplines"),
+                        params.get("lessontype"),
+                        marks);
+            }
+            return getMarks(params.get("date"),
+                    params.get("topic"),
+                    params.get("disciplines"),
+                    params.get("lessontype"));
+
         }
         else{
-            dao.insertMarks(params.get("date"),
+            dao.updateMarks(params.get("date"),
                 params.get("topic"),
                 params.get("disciplines"),
                 params.get("lessontype"),
                 marks);
+            return getMarks(params.get("date"),
+                    params.get("topic"),
+                    params.get("disciplines"),
+                    params.get("lessontype"));
         }
+    }
+
+    public List<Mark> getMarks(String date,
+                         String topic,
+                         String discipline,
+                         String lessonType){
+        ArrayList<String[]> temp = dao.getMarks(date, topic, discipline, lessonType);
+        List<Mark> result = new ArrayList<>();
+        for (String[] a: temp){
+            result.add(new Mark(dao.getMark(a[1]), dao.getStudent(a[0])));
+        }
+        return result;
     }
 
     public ArrayList<String> getDisciplines(){
