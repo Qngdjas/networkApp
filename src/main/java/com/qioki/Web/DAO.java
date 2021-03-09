@@ -1,10 +1,8 @@
 package com.qioki.Web;
 
-import org.apache.tomcat.util.net.jsse.JSSEUtil;
-
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class DAO {
 
@@ -34,6 +32,12 @@ public class DAO {
         }
     }
 
+    /**
+     * The method checks whether the user with the entered data exists
+     * @param username entered user name
+     * @param password entered user password
+     * @return id of entered teacher
+     */
     public int auth(String username, String password) {
         int result = 0;
         this.createConnectionDataBase();
@@ -58,6 +62,11 @@ public class DAO {
         }
     }
 
+    /**
+     * The method fetches names of groups from data base
+     * @param teacherId id of teacher
+     * @return list of groups attached to teacher
+     */
     public ArrayList<String> getGroups(int teacherId){
         this.createConnectionDataBase();
         String query = "SELECT name_group FROM groups " +
@@ -80,6 +89,11 @@ public class DAO {
         }
     }
 
+    /**
+     * The method fetches names of students from data base
+     * @param groupName name of group
+     * @return list of students attached to group
+     */
     public ArrayList<String> getStudents(String groupName){
         this.createConnectionDataBase();
         ArrayList<String> result = new ArrayList<>();
@@ -102,17 +116,115 @@ public class DAO {
         }
     }
 
+    /**
+     * The method fetches teacher full name
+     * @param teacherId id of teacher
+     * @return teacher full name
+     */
     public String getTeacher(int teacherId){
         this.createConnectionDataBase();
-        String query = "select FIO_teacher where id_teacher=?";
+        String query = "select FIO_teacher from teacher where id_teacher=?";
+        String result = "";
         try {
             PreparedStatement statement = this.connectionBD.prepareStatement(query);
             statement.setString(1, Integer.toString(teacherId));
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()){
-                System.out.println();
+                result = resultSet.getString(1);
             }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+    /**
+     * The method checks availability of data base fetching some data
+     * @return result of checking (true - available /false - not available)
+     */
+    public boolean checkAvailability(){
+        this.createConnectionDataBase();
+        boolean result = false;
+        String query = "select * from type_activity";
+        try{
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            if (resultSet.next()){
+                result = true;
+            }
+
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+    public ArrayList<String[]> getMarks(String date,
+                                        String topic,
+                                        String discipline,
+                                        String lessonType){
+        String query = "select id_student, id_estimation " +
+                "from journal " +
+                "where date=? and topic=? and " +
+                "id_disciplines=(select id_disciplines from disciplines where disciplines=?) and " +
+                "id_type=(select id_type from type_activity where type=?)";
+        ArrayList<String[]> result = new ArrayList<>();
+        this.createConnectionDataBase();
+        try{
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, date);
+            statement.setString(2, topic);
+            statement.setString(3, discipline);
+            statement.setString(4, lessonType);
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while(resultSet.next()){
+                String[] mark = new String[] {resultSet.getString(1), resultSet.getString(2)};
+                result.add(mark);
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+    public void insertMarks(String date,
+                            String topic,
+                            String discipline,
+                            String lessonType,
+                            HashMap<String, String> marks
+                            ){
+        this.createConnectionDataBase();
+        String query = "insert into journal (id_disciplines, " +
+                "id_student, id_type, id_estimation, date, topic) " +
+                "values (" +
+                "(select id_disciplines from disciplines where disciplines=?)," +
+                "(select id_student from students where FIO_student=?)," +
+                "(select id_type from type_activity where type=?)," +
+                "(select  id_estimation from estimation where estimation=?)," +
+                "?, ?)";
+        try {
+            for(String name: marks.keySet()){
+                PreparedStatement statement = this.connectionBD.prepareStatement(query);
+                statement.setString(1, discipline);
+                statement.setString(2, name);
+                statement.setString(3, lessonType);
+                statement.setString(4, marks.get(name));
+                statement.setString(5, date);
+                statement.setString(6, topic);
+                statement.execute();
+            }
+
         }catch (SQLException throwables){
             throwables.printStackTrace();
         }
@@ -120,6 +232,155 @@ public class DAO {
             this.closeConnectionDataBase();
         }
     }
+//
+//    public void updateMarks(String date,
+//                            String topic,
+//                            String discipline,
+//                            String lessonType,
+//                            HashMap<String, String> marks){
+//        ArrayList<String[]> journalIds = getJournalRecords(date, topic, discipline, lessonType);
+//        String query = "update journal" +
+//                "set id_estimation=?" +
+//                "where id_journal=? and id_student=?";
+//        this.createConnectionDataBase();
+//        try{
+//            for (String[] temp: journalIds ){
+//                if
+//            }
+//            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+//            statement.setString(1, );
+//
+//        }catch (SQLException throwables){
+//            throwables.printStackTrace();
+//        }
+//        finally {
+//            this.closeConnectionDataBase();
+//        }
+//
+//    }
+
+
+    public String getStudent(int studentId){
+        this.createConnectionDataBase();
+        String query = "select FIO_student from students where id_student=?";
+        String result = "";
+        try {
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, Integer.toString(studentId));
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()){
+                result = resultSet.getString(1);
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+    public String getMark(int markId){
+        this.createConnectionDataBase();
+        String query = "select estimation from estimation where id_estimation=?";
+        String result = "";
+        try {
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, Integer.toString(markId));
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()){
+                result = resultSet.getString(1);
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+
+    public ArrayList<String[]> getJournalRecords(String date,
+                                               String topic,
+                                               String discipline,
+                                               String lessonType){
+        String query = "Select id_journal, id_student from journal " +
+                "where date=? and " +
+                "topic=? and " +
+                "id_disciplines=(select id_disciplines from disciplines where disciplines=?) and " +
+                "id_type=(select id_type from type_activity where type=?)";
+        ArrayList<String[]> result = new ArrayList<>();
+        this.createConnectionDataBase();
+        try{
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.setString(1, date);
+            statement.setString(2, topic);
+            statement.setString(3, discipline);
+            statement.setString(4, lessonType);
+            System.out.println(statement);
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while (resultSet.next()){
+                String[] temp = new String[] {resultSet.getString(1), resultSet.getString(2)};
+                result.add(temp);
+            }
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+    public ArrayList<String> getDisciplines(){
+        ArrayList<String> result = new ArrayList<>();
+        String query = "select disciplines from disciplines";
+        this.createConnectionDataBase();
+        try{
+            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+            statement.execute();
+            ResultSet resultSet = statement.getResultSet();
+            while(resultSet.next()){
+                result.add(resultSet.getString(1));
+            }
+
+        }catch (SQLException throwables){
+            throwables.printStackTrace();
+        }
+        finally {
+            this.closeConnectionDataBase();
+            return result;
+        }
+    }
+
+
+//    по дате, теме, типу занятия и дисциплине создаем записи по студентам в journal
+
+
+//    public String getTeacher(int teacherId){
+//        this.createConnectionDataBase();
+//        String query = "select FIO_teacher from teacher where id_teacher=?";
+//        String result = "";
+//        try {
+//            PreparedStatement statement = this.connectionBD.prepareStatement(query);
+//            statement.setString(1, Integer.toString(teacherId));
+//            statement.execute();
+//            ResultSet resultSet = statement.getResultSet();
+//            while (resultSet.next()){
+//                result = resultSet.getString(1);
+//            }
+//        }catch (SQLException throwables){
+//            throwables.printStackTrace();
+//        }
+//        finally {
+//            this.closeConnectionDataBase();
+//            return result;
+//        }
+//    }
 
     /*public void sql_query(String sql) throws SQLException {
 
