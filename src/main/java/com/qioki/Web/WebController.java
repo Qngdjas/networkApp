@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 @Controller
@@ -15,8 +14,7 @@ public class WebController {
     Service service = new Service();
 
     @RequestMapping("/")
-    public String logIn(HttpServletRequest request) {
-        System.out.println(request.getRemoteAddr());
+    public String logIn() {
         return "index";
     }
 
