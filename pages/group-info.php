@@ -35,7 +35,7 @@
                     <tr>
                         <th><input type="date" name="date"></th>
                         <th><select th:each="discipline :${disciplines}" name="disciplines">
-                                <option th:text="${discipline}"></option>
+                                <option th:text="${discipline}" value=""></option>
                             </select></th>
                     </tr>
                     <tr><th><input type="hidden"></th></tr>
