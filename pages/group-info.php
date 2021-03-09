@@ -55,11 +55,11 @@
                         </div>
                         </td>-->
                             <select name="lessontype">
-                                <option value="lecture">лекция</option>
-                                <option value="seminar">семинар</option>
-                                <option value="lab">лабораторная</option>
-                                <option value="consult">консультация</option>
-                                <option value="exam">экзамен</option>
+                                <option value="лекция">лекция</option>
+                                <option value="семинар">семинар</option>
+                                <option value="лабораторная">лабораторная</option>
+                                <option value="консультация">консультация</option>
+                                <option value="экзамен">экзамен</option>
                             </select></th>
                     </tr>
                 </table>
@@ -74,11 +74,11 @@
                             <td>
                                 <div style="text-align: center">
                                     <select name="mark">
-                                        <option value="none">н/я</option>
-                                        <option value="attend">+</option>
-                                        <option value="five">отл</option>
-                                        <option value="four">хор</option>
-                                        <option value="three">удовл</option>
+                                        <option value="-">н/я</option>
+                                        <option value="+">+</option>
+                                        <option value="отлично">отл</option>
+                                        <option value="хорошо">хор</option>
+                                        <option value="удовлетворительно">удовл</option>
                                     </select>
                                 </div>
                             </td>
