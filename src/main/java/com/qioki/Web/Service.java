@@ -3,6 +3,7 @@ package com.qioki.Web;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Service {
@@ -67,6 +68,7 @@ public class Service {
                 marks.put(key.replace("mark|", ""), params.get(key));
             }
         }
+
         boolean check = true;
         for(String mark: marks.values()){
             if  (!mark.equals("-")){
@@ -84,15 +86,6 @@ public class Service {
                 params.get("lessontype"),
                 marks);
         }
-//        dao.insertMarks(params.get("date"),
-//                params.get("topic"),
-//                params.get("disciplines"),
-//                params.get("lessontype"),
-//                marks);
-//        ArrayList<String[]> temp = dao.getJournalRecords(params.get("date"),
-//                params.get("topic"),
-//                params.get("disciplines"),
-//                params.get("lessontype"));
     }
 
     public ArrayList<String> getDisciplines(){

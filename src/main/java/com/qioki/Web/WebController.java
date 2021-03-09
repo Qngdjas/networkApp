@@ -5,9 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 public class WebController {
@@ -61,11 +59,9 @@ public class WebController {
 //        return "index";
 //    }
     @RequestMapping("/test")
-    public String text(@RequestParam Map<String, String> allParams){
+    public String text(@RequestParam Map<String, String> allParams, Model model){
         service.insertMarks(allParams);
-
-
-        return "index";
+        return "group-info-mark";
     }
 
 

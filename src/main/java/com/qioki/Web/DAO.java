@@ -260,13 +260,13 @@ public class DAO {
 //    }
 
 
-    public String getStudent(int studentId){
+    public String getStudent(String studentId){
         this.createConnectionDataBase();
         String query = "select FIO_student from students where id_student=?";
         String result = "";
         try {
             PreparedStatement statement = this.connectionBD.prepareStatement(query);
-            statement.setString(1, Integer.toString(studentId));
+            statement.setString(1, studentId);
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()){
@@ -281,13 +281,13 @@ public class DAO {
         }
     }
 
-    public String getMark(int markId){
+    public String getMark(String markId){
         this.createConnectionDataBase();
         String query = "select estimation from estimation where id_estimation=?";
         String result = "";
         try {
             PreparedStatement statement = this.connectionBD.prepareStatement(query);
-            statement.setString(1, Integer.toString(markId));
+            statement.setString(1, markId);
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()){
@@ -307,7 +307,7 @@ public class DAO {
                                                String topic,
                                                String discipline,
                                                String lessonType){
-        String query = "Select id_journal, id_student from journal " +
+        String query = "Select id_student, id_estimation from journal " +
                 "where date=? and " +
                 "topic=? and " +
                 "id_disciplines=(select id_disciplines from disciplines where disciplines=?) and " +
@@ -324,7 +324,8 @@ public class DAO {
             statement.execute();
             ResultSet resultSet = statement.getResultSet();
             while (resultSet.next()){
-                String[] temp = new String[] {resultSet.getString(1), resultSet.getString(2)};
+                String[] temp = new String[] {getStudent(resultSet.getString(1)),
+                        getMark(resultSet.getString(2))};
                 result.add(temp);
             }
         }catch (SQLException throwables){
