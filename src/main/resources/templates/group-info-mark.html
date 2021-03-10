@@ -81,10 +81,10 @@
             </tr>
             <div th:each="student :${students}">
                 <tr>
-                    <td ><div th:text="${student}" style="text-align: center"></div></td>
+                    <td ><div th:utext="${student.name}+' | '+${student.mark}" style="text-align: center"></div></td>
                     <td>
                         <div style="text-align: center">
-                            <select th:name="'mark|'+${student}">
+                            <select th:name="'mark|'+${student.name}">
                                 <option value="-">н/я</option>
                                 <option value="+">+</option>
                                 <option value="отлично">отл</option>
