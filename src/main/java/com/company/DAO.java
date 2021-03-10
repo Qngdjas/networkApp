@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class DAO {
 
     Connection connectionBD = null;
+
     //database link
     private final String DB_URL = "jdbc:mysql://localhost:3306/journal_rp.sql";
 
@@ -77,29 +78,33 @@ public class DAO {
         // getting Statement object to execute query
         Statement statement = connectionBD.createStatement();
 
-        //sql query
-        String sqlQueryIDTeacher =
-                "SELECT id_teacher" +
-                "FROM teacher" +
-                "WHERE FIO_teacher = (name teacher)"; //вставить имя преподователя из бд
 
-        //sql query
-        String sqlQuery =
-                "SELECT id_grup" +
+        /* запрос с подзапросами:
+        получить id учителя по имени
+        в таблице teacher_groups получаем id групп прикрепленных к id учителя
+        по id группам получаем из таблицы групп наименование группы
+        */
+
+        String sqlQuery1 =
+                "SELECT id_teacher" +
                 "FROM teacher_groups" +
                 "WHERE ";
 
 
-        // executing SELECT query
-        ResultSet resultSet = statement.executeQuery(sqlQuery);
 
-        //close statement
+        // executing SELECT query
+        ResultSet resultSet = statement.executeQuery(sqlQuery1);
+
+        // close connection DB
+        closeConnectionDataBase();
+
+        // close statement
         try {
             statement.close();
         } catch (SQLException se) {
         }
 
-        //close resultSet
+        // close resultSet
         try {
             resultSet.close();
         } catch (SQLException se) {
